@@ -1,0 +1,40 @@
+{
+  "name": "md-juejin",
+  "version": "1.0.0",
+  "description": "A CLI tool to scrape Juejin articles and convert them to Markdown",
+  "main": "dist/cli.js",
+  "bin": {
+    "md-juejin": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "juejin",
+    "markdown",
+    "scraper",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "ora": "^5.4.1",
+    "playwright": "^1.40.0",
+    "sanitize-filename": "^1.6.3",
+    "turndown": "^7.1.2",
+    "turndown-plugin-gfm": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.17.24",
+    "@types/turndown": "^5.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  }
+}
