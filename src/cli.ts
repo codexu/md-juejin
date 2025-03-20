@@ -3,6 +3,7 @@ import { program } from 'commander';
 import chalk from 'chalk';
 import { scrapeArticle } from './post';
 import saveMarkdown from './saveMarkdown';
+import saveImages from './saveImages';
 
 program
   .name('md-juejin')
@@ -19,6 +20,7 @@ program
       const articleInfo = await scrapeArticle(url);
       const path = `${options.output}/${articleInfo.title}`
       await saveMarkdown(articleInfo.markdown, path, articleInfo.title || 'untitled');
+      await saveImages(articleInfo.images, path)
       console.log(chalk.green('Article scraped successfully!'));
     } catch (error) {
       console.error(chalk.red('Error scraping article:'), error);
