@@ -13,15 +13,15 @@ program
 program
   .command('post <url>')
   .description('Scrape a Juejin article and convert it to Markdown')
-  .option('-o, --output <dir>', 'Output directory', `${process.env.HOME}/Desktop`)
+  .option('-o, --output <dir>', 'Output directory', `${process.cwd()}/md-juejin`)
   .action(async (url, options) => {
     try {
-      console.log(chalk.blue(`Starting to scrape article from ${url}`));
+      console.log(chalk.blue(`开始导出 ${url}`));
       const articleInfo = await scrapeArticle(url);
-      const path = `${options.output}/${articleInfo.title}`
+      const path = `${options.output}/${articleInfo.title || 'untitled'}`
       await saveMarkdown(articleInfo.markdown, path, articleInfo.title || 'untitled');
       await saveImages(articleInfo.images, path)
-      console.log(chalk.green('Article scraped successfully!'));
+      console.log(chalk.green(`导出成功 ${articleInfo.title}，共计${articleInfo.images.length}张图片。`));
     } catch (error) {
       console.error(chalk.red('Error scraping article:'), error);
       process.exit(1);
