@@ -1,11 +1,11 @@
 import { chromium, Page } from 'playwright'
 
 export async function scrapeArticles(url: string) {
-  const browser = await chromium.launch({ headless: false })
+  const browser = await chromium.launch({ headless: true })
   const context = await browser.newContext()
   const page = await context.newPage()
   await page.goto(url)
-  await page.waitForSelector('.post-list-header', { timeout: 5000 })
+  await page.waitForSelector('.post-list-header', { timeout: 10000 })
   await autoScroll(page)
   const articles = await page.$$('.entry-list>.item')
   const articleList = []
@@ -22,7 +22,7 @@ async function autoScroll(page: Page) {
   await page.evaluate(async () => {
     return new Promise<void>((resolve) => {
       let totalHeight = 0;
-      const distance = 300;
+      const distance = 200;
       let scrollAttempts = 0;
       const maxScrollAttempts = 100;
       let timer = setInterval(() => {

@@ -9,7 +9,7 @@ import { scrapeArticles } from './posts';
 program
   .name('md-juejin')
   .description('A CLI tool to scrape Juejin articles and convert them to Markdown')
-  .version('1.0.0');
+  .version('1.0.3');
 
 program
   .command('post <url>')
