@@ -1,6 +1,6 @@
 {
   "name": "md-juejin",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A CLI tool to scrape Juejin articles and convert them to Markdown",
   "main": "dist/cli.js",
   "bin": {
@@ -22,13 +22,16 @@
   "author": "codexu",
   "license": "MIT",
   "dependencies": {
+    "@types/figlet": "^1.7.0",
     "@types/showdown": "^2.0.6",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
+    "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
     "ora": "^5.4.1",
     "playwright": "^1.40.0",
     "sanitize-filename": "^1.6.3",
+    "table": "^6.9.0",
     "turndown": "^7.1.2",
     "turndown-plugin-gfm": "^1.0.2"
   },

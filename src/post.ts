@@ -29,7 +29,8 @@ export async function scrapeArticle(url: string, headless: boolean = true) {
   try {
     await page.waitForSelector('.article-title', { timeout: 10000 })
     const titleDom = await page.$('.article-title')
-    const title = (await titleDom?.textContent())?.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/\s+/g, '_')
+    const title = (await titleDom?.textContent())?.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/\s+/g, '_') || ''
+    const createdAt = (await (await page.$('.time'))?.textContent())?.trim() || '未获取到时间'
     await page.waitForSelector('#article-root', { timeout: 10000 })
     const article = await page.$('#article-root')
     await article?.$$eval('style', (styles) => styles.forEach(style => style.remove()))
@@ -51,7 +52,7 @@ export async function scrapeArticle(url: string, headless: boolean = true) {
     const contentHtml = `<h1>${title}</h1>${await article?.innerHTML()}`
     const markdown = turndownService.turndown(contentHtml)
     await browser.close()
-    return { title, markdown, images }
+    return { title, markdown, images, createdAt }
   } catch (error) {
     console.log(chalk.red('发生异常，请手动处理验证码'))
     return await scrapeArticle(url, false)
