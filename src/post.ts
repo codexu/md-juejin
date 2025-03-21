@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { chromium } from 'playwright'
 import TurndownService from 'turndown'
+import { verify } from './verify'
 
 const turndownPluginGfm = require('turndown-plugin-gfm')
 const gfm = turndownPluginGfm.gfm
@@ -17,11 +18,15 @@ turndownService.use(tables)
 turndownService.use(strikethrough)
 
 export async function scrapeArticle(url: string, headless: boolean = true) {
+  const browser = await chromium.launch({ headless, devtools: true, args: ['--disable-web-security'] })
+  const context = await browser.newContext()
+  const page = await context.newPage()
+  await page.goto(url)
   try {
-    const browser = await chromium.launch({ headless })
-    const context = await browser.newContext()
-    const page = await context.newPage()
-    await page.goto(url)
+    await verify(page)
+  } catch (error) {
+  }
+  try {
     await page.waitForSelector('.article-title', { timeout: 10000 })
     const titleDom = await page.$('.article-title')
     const title = (await titleDom?.textContent())?.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/\s+/g, '_')
