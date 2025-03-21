@@ -46,6 +46,7 @@ program
         console.log(chalk.green(`导出成功 ${articleInfo.title}，共计${articleInfo.images.length}张图片。`));
       }
       console.log(chalk.green(`导出成功 ${articleList.length}篇文章`))
+      process.exit(0)
     } catch (error) {
       console.error(chalk.red('Error scraping article:'), error);
       process.exit(1);
