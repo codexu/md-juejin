@@ -1,60 +1,63 @@
-# md-juejin
+# MD JUEJIN
 
-A CLI tool to scrape Juejin articles, convert them to Markdown, and save them along with their images.
+掘金搬家工具，一键搬走自己的所有文章（注意这里 MD 不是“妈的”，而是“markdown”）。
 
-## Features
+本质上是一个基于 Node.js 的命令行工具，可以快速将单篇文章或用户的文章列表批量导出 md 文件，包含所有图片。
 
-- Scrape articles from Juejin
-- Convert HTML content to Markdown format
-- Download and save all images from the article
-- Save the article and images to a directory on your Desktop
+## 演示
 
-## Installation
+使用命令行工具，快速批量导出：
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/md-juejin.git
-cd md-juejin
+![](https://github.com/user-attachments/assets/e97ebc3f-75ee-44ed-9971-e1d97d4b446e)
 
-# Install dependencies
-npm install
+导出结果，每篇文章导出为独立的文件夹，包含 md 文件和图片：
 
-# Build the project
-npm run build
+![](https://github.com/user-attachments/assets/31d06267-9d2c-421f-adf4-d712be15e623)
 
-# Link the package globally (optional)
-npm link
-```
+## 环境要求
 
-## Usage
+- Latest version of Node.js 18, 20 or 22.
+- Windows 10+, Windows Server 2016+ or Windows Subsystem for Linux (WSL).
+- macOS 13 Ventura, or later.
+- Debian 12, Ubuntu 22.04, Ubuntu 24.04, on x86-64 and arm64 architecture.
+
+## 使用
+
+无需安装，即可使用。
+
+首次使用时，安装过程中将会自动安装 playwright 和 chromium，可能需要几分钟时间。
+
+### 单篇文章导出
 
 ```bash
 # Using npx
-npx md-juejin scrape <article-url>
+npx md-juejin@latest post <article-url>
 
-# If linked globally
-md-juejin scrape <article-url>
-
-# Specify a custom output directory
-md-juejin scrape <article-url> --output /path/to/output
+# Using pnpx
+pnpx md-juejin@latest post <article-url>
 ```
 
-### Example
+article-url：掘金文章的 URL，例如：https://juejin.cn/post/7482692656990470196
+
+### 批量导出
 
 ```bash
-md-juejin scrape https://juejin.cn/post/7318704408727519270
+# Using npx
+npx md-juejin@latest posts <posts-url>
+
+# Using pnpx
+pnpx md-juejin@latest posts <posts-url>
 ```
 
-This will:
-1. Scrape the article from the provided URL
-2. Convert the HTML content to Markdown
-3. Download all images in the article
-4. Save everything to a folder named after the article title on your Desktop
+posts-url：掘金用户的文章列表的 URL，例如：https://juejin.cn/user/2559318798640807/posts
 
-## Requirements
+### 本地开发
 
-- Node.js 14 or higher
-- npm or yarn
+```bash
+pnpm install
+pnpm dev post <article-url>
+pnpm dev posts <posts-url>
+```
 
 ## License
 
