@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { program } from 'commander';
 import chalk from 'chalk';
-import { createStream } from 'table';
 import { scrapeArticle } from './post';
 import saveMarkdown from './saveMarkdown';
 import saveImages from './saveImages';
@@ -41,32 +40,23 @@ program
   .option('-o, --output <dir>', 'Output directory', `${process.cwd()}/md-juejin`)
   .action(async (url, options) => {
     try {
-      const config = {
-        columnCount: 4,
-        columnDefault: {
-          width: 10,
-        },
-        columns: {
-          0: { width: 5 },
-          1: { width: 50 },
-          2: { width: 10 },
-          3: { width: 15 },
-        },
-      };
-      const stream = createStream(config);
-      stream.write(['编号', '文章名称', '图片数量', '发布时间']);
       const spinner = ora('开始查询文章列表').start();
       const articleList = await scrapeArticles(url);
+      spinner.succeed(`文章列表查询成功，共 ${articleList.length} 篇文章。`);
       for (const article of articleList) {
         const index = articleList.indexOf(article) + 1
-        spinner.start(`正在导出《${article.title}》，进度：${index}/${articleList.length}`);
-        const articleInfo = await scrapeArticle(article.url);
-        const path = `${options.output}/${articleInfo.title}`
-        await saveMarkdown(articleInfo.markdown, path, articleInfo.title);
-        await saveImages(articleInfo.images, path)
-        stream.write([`${index}`, articleInfo.title, `${articleInfo.images.length}`, articleInfo.createdAt]);
+        spinner.start(`正在导出 (${index}/${articleList.length}) 《${article.title}》`);
+        try {
+          const articleInfo = await scrapeArticle(article.url);
+          const path = `${options.output}/${articleInfo.title}`
+          await saveMarkdown(articleInfo.markdown, path, articleInfo.title);
+          await saveImages(articleInfo.images, path)
+          spinner.succeed(`《${articleInfo.title}》导出成功，共 ${articleInfo.images.length} 张图片。`);
+        } catch (error) {
+          spinner.fail(`《${article.title}》导出失败`);
+        }
       }
-      spinner.succeed(`导出成功 ${articleList.length}篇文章`);
+      spinner.succeed(`文章导出结束，导出路径：${options.output}`);
       process.exit(0)
     } catch (error) {
       console.error(chalk.red('Error scraping articles:'), error);
