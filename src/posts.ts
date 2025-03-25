@@ -6,6 +6,8 @@ import ora from 'ora';
 import saveMarkdown from './saveMarkdown';
 import saveImages from './saveImages';
 import dayjs from 'dayjs';
+import { access } from 'fs/promises';
+
 const open = require('open');
 
 let isMore = true
@@ -56,16 +58,22 @@ export async function scrapeArticles({
   const context = await browser.newContext()
   let endIndex = 0;
   for (const article of articleList) {
-    spinner.start(`正在导出...`);
+    endIndex += 1
+    spinner.start(`${endIndex}/${articleList.length} 正在导出《${article.title}》`);
     try {
+      // 判断是否已经存在
+      const filePath = `${options.output}/${article.title?.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/\s+/g, '_') || ''}`
+      const isExist = await access(filePath).then(() => true).catch(() => false)
+      if (isExist) {
+        spinner.succeed(`${endIndex}/${articleList.length}《${article.title}》已存在，跳过。`);
+        continue
+      }
       const articleInfo = await readArticle(context, article.url);
       const path = `${options.output}/${articleInfo.title}`
       await saveMarkdown(articleInfo.markdown, path, articleInfo.title);
       await saveImages(articleInfo.images, path)
-      endIndex += 1
       spinner.succeed(`${endIndex}/${articleList.length}《${articleInfo.title}》导出成功，共 ${articleInfo.images.length} 张图片。`);
     } catch (error) {
-      endIndex += 1
       spinner.fail(`${endIndex}/${articleList.length}《${article.title}》导出失败`);
     }
   }
