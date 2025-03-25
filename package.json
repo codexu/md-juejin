@@ -10,6 +10,7 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "dev": "ts-node src/cli.ts",
+    "push": "tsc && npm publish",
     "prepublishOnly": "npm run build",
     "postinstall": "npx playwright install chromium --with-deps"
   },
