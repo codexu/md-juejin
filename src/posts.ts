@@ -35,7 +35,7 @@ async function fetchPosts(user_id: string, cursor: number) {
   isMore = data.has_more
   return data.data.map((item) => ({
     title: item.article_info.title,
-    url: `https://juejin.cn/post/${item.article_info.article_id}`
+  url: `https://juejin.cn/post/${item.article_info.article_id}`
   }))
 }
 
@@ -52,7 +52,13 @@ export async function scrapeArticles({
   },
   startTime: dayjs.Dayjs
 }) {
-  const articleList = await fetchPostsList(url)
+  const articleList = []
+  try {
+    articleList.push(...(await fetchPostsList(url)))
+  } catch (error) {
+    spinner.fail('获取文章列表失败，可能是由于请求过于频繁，导致被限制，请稍后重试，或尝试更换。')
+    process.exit(0)
+  }
   spinner.succeed(`文章列表查询成功，共 ${articleList.length} 篇文章。`);
   const browser = await chromium.launch({ headless: true, devtools: true, args: ['--disable-web-security'] })
   const context = await browser.newContext()
@@ -75,6 +81,7 @@ export async function scrapeArticles({
       spinner.succeed(`${endIndex}/${articleList.length}《${articleInfo.title}》导出成功，共 ${articleInfo.images.length} 张图片。`);
     } catch (error) {
       spinner.fail(`${endIndex}/${articleList.length}《${article.title}》导出失败`);
+      console.log(error)
     }
   }
   await browser.close()
