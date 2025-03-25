@@ -7,6 +7,7 @@ import saveImages from './saveImages';
 import { scrapeArticles } from './posts';
 import figlet from 'figlet';
 import ora from 'ora';
+import dayjs from 'dayjs';
 
 console.log(figlet.textSync("md-juejin"));
 console.log('')
@@ -40,24 +41,10 @@ program
   .option('-o, --output <dir>', 'Output directory', `${process.cwd()}/md-juejin`)
   .action(async (url, options) => {
     try {
+      // 记录开始时间
+      const startTime = dayjs()
       const spinner = ora('开始查询文章列表').start();
-      const articleList = await scrapeArticles(url);
-      spinner.succeed(`文章列表查询成功，共 ${articleList.length} 篇文章。`);
-      for (const article of articleList) {
-        const index = articleList.indexOf(article) + 1
-        spinner.start(`正在导出 (${index}/${articleList.length}) 《${article.title}》`);
-        try {
-          const articleInfo = await scrapeArticle(article.url);
-          const path = `${options.output}/${articleInfo.title}`
-          await saveMarkdown(articleInfo.markdown, path, articleInfo.title);
-          await saveImages(articleInfo.images, path)
-          spinner.succeed(`《${articleInfo.title}》导出成功，共 ${articleInfo.images.length} 张图片。`);
-        } catch (error) {
-          spinner.fail(`《${article.title}》导出失败`);
-        }
-      }
-      spinner.succeed(`文章导出结束，导出路径：${options.output}`);
-      process.exit(0)
+      await scrapeArticles({url, spinner, options, startTime});
     } catch (error) {
       console.error(chalk.red('Error scraping articles:'), error);
       process.exit(1);

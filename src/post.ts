@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { chromium } from 'playwright'
+import { chromium, BrowserContext } from 'playwright'
 import TurndownService from 'turndown'
 import { verify } from './verify'
 
@@ -20,6 +20,14 @@ turndownService.use(strikethrough)
 export async function scrapeArticle(url: string, headless: boolean = true) {
   const browser = await chromium.launch({ headless, devtools: true, args: ['--disable-web-security'] })
   const context = await browser.newContext()
+  const { title, markdown, images, createdAt } = await readArticle(context, url)
+  await browser.close()
+  return { title, markdown, images, createdAt }
+}
+
+export async function readArticle(context: BrowserContext, url: string)
+  : Promise<{ title: string, markdown: string, images: { src: string, fileName: string }[], createdAt: string }> 
+{
   const page = await context.newPage()
   await page.goto(url)
   try {
@@ -51,7 +59,6 @@ export async function scrapeArticle(url: string, headless: boolean = true) {
     })
     const contentHtml = `<h1>${title}</h1>${await article?.innerHTML()}`
     const markdown = turndownService.turndown(contentHtml)
-    await browser.close()
     return { title, markdown, images, createdAt }
   } catch (error) {
     console.log(chalk.red('发生异常，请手动处理验证码'))
